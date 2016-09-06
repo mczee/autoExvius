@@ -67,33 +67,21 @@ F8::
         LongSleep()
         enterExploration() ;get to the exploration
         clearZone1() ;clear zone 1
-        goTopRight()
-        collectFirstPoint()
-        collectSecondPointAndGoToZone2()
-        clearZone2() ;clear zone 2
-        collectThirdPoint()
-        collectFourthPoint()
-        goToBoss()
-        killBoss()
-        collectFifthPoint()
+		GoToZoneTwo()
+        clearZone2()
+        GoToBoss()
+        KillBoss()
+        GoToExit()
         exitExploration()
         global delayBetweenMacros
         sleep, delayBetweenMacros
     }
 }
 
-; test click
+; Debug
 F9::
 {
-        clearZone2() ;clear zone 2
-        collectThirdPoint()
-        collectFourthPoint()
-        goToBoss()
-        killBoss()
-        collectFifthPoint()
-        exitExploration()
-        global delayBetweenMacros
-        sleep, delayBetweenMacros
+	;KillBoss()	
 }
 
 clickOn(px, py) {
@@ -101,38 +89,201 @@ clickOn(px, py) {
     MouseClick, left, x0 + px*width, y0 + py*height
 }
 
+MoveOneStepUp(steps:=1) {
+    Loop, %steps% {
+		clickOn(0.50, 0.43)
+		MicroSleep()
+    }
+}
+
+MoveOneStepDown(steps:=1) {
+    Loop, %steps% {
+		clickOn(0.50, 0.51)
+		MicroSleep()
+    }
+}
+
+MoveOneStepLeft(steps:=1) {
+    Loop, %steps% {
+		clickOn(0.45, 0.47)
+		MicroSleep()
+    }
+}
+
+MoveOneStepRight(steps:=1) {
+    Loop, %steps% {
+		clickOn(0.55, 0.47)
+		MicroSleep()
+    }
+}
+
+GoToZoneTwo() {
+	goTopRight()
+	clickOn(0.50, 0.35)
+    MicroSleep()
+    clickOn(0.50, 0.40)
+    MicroSleep()
+    clickOn(0.50, 0.45)
+    MicroSleep()
+	MoveOneStepDown(13)
+	MoveOneStepLeft(19)
+	MoveOneStepUp(14)
+	clickOn(0.50, 0.35)
+    MicroSleep()
+    clickOn(0.50, 0.40)
+    MicroSleep()
+    clickOn(0.50, 0.45)
+    MicroSleep()
+	MoveOneStepDown(15)
+	MoveOneStepLeft(26)
+	MoveOneStepUp(13)
+	MoveOneStepLeft(15)
+	MoveOneStepUp(1)
+    clickOn(0.50, 0.45)
+    MicroSleep()
+    clickOn(0.50, 0.40)
+    MicroSleep()
+	clickOn(0.50, 0.35)
+    MicroSleep()
+	clickOn(0.50, 0.30)
+    MicroSleep()
+	clickOn(0.50, 0.25)
+    MicroSleep()
+	clickOn(0.50, 0.20)
+    MicroSleep()
+	clickOn(0.50, 0.25)
+    MicroSleep()
+    clickOn(0.50, 0.30)
+    MicroSleep()
+    clickOn(0.50, 0.35)
+    MicroSleep()
+    clickOn(0.50, 0.40)
+    MicroSleep()
+    clickOn(0.50, 0.45)
+    MicroSleep()
+	MoveOneStepDown(1)
+	MoveOneStepLeft(3)
+}
+
+GoToBoss() {
+	goTopRight()
+    MicroSleep()
+	MoveOneStepDown(1)
+	MoveOneStepLeft(23)
+	MoveOneStepDown(1)
+	MoveOneStepRight(15)
+	MoveOneStepDown(16)
+	MoveOneStepLeft(3)
+	MoveOneStepDown(4)
+	MoveOneStepLeft(16)
+	MoveOneStepUp(6)
+	MoveOneStepLeft(13)
+	MoveOneStepDown(12)
+	MoveOneStepLeft(4)
+	MoveOneStepRight(4)
+	MoveOneStepUp(13)
+	MoveOneStepLeft(25)
+	MoveOneStepUp(5)
+}
+
+GoToExit() {
+	MoveOneStepUp(8)
+	MoveOneStepRight(9)
+	MoveOneStepUp(1)
+    clickOn(0.50, 0.45)
+    MicroSleep()
+    clickOn(0.50, 0.40)
+    MicroSleep()
+	clickOn(0.50, 0.35)
+    MicroSleep()
+	clickOn(0.50, 0.30)
+    MicroSleep()
+	clickOn(0.55, 0.30)
+    MicroSleep()
+	clickOn(0.55, 0.30)
+    MicroSleep()
+	clickOn(0.55, 0.30)
+    MicroSleep()
+	clickOn(0.55, 0.30)
+    MicroSleep()
+	clickOn(0.55, 0.30)
+    MicroSleep()
+	clickOn(0.55, 0.30)
+    MicroSleep()
+	clickOn(0.55, 0.30)
+    MicroSleep()
+	clickOn(0.55, 0.30)
+    MicroSleep()
+	clickOn(0.45, 0.30)
+    MicroSleep()
+	clickOn(0.45, 0.30)
+    MicroSleep()
+	clickOn(0.45, 0.30)
+    MicroSleep()
+	clickOn(0.45, 0.30)
+    MicroSleep()
+	clickOn(0.45, 0.30)
+    MicroSleep()
+	clickOn(0.45, 0.30)
+    MicroSleep()
+	clickOn(0.45, 0.30)
+    MicroSleep()
+	clickOn(0.45, 0.30)
+    MicroSleep()
+	clickOn(0.50, 0.35)
+    MicroSleep()
+    clickOn(0.50, 0.40)
+    MicroSleep()
+    clickOn(0.50, 0.45)
+    MicroSleep()
+	MoveOneStepDown(1)
+	MoveOneStepLeft(12)
+    clickOn(0.50, 0.45)
+    MicroSleep()
+    clickOn(0.50, 0.40)
+    MicroSleep()
+	clickOn(0.50, 0.35)
+    MicroSleep()
+}
+
 goTopRight() {
     clickOn(0.95, 0.05)
     QuickSleep()
 }
+
 goBottomLeft() {
     clickOn(0.05, 0.95)
     QuickSleep()
 }
+
 goMaxTop(steps){
     Loop, %steps% {
         clickOn(0.5, 0.01)
         LongSleep()
     }
 }
+
 goMaxBottom(steps) {
     Loop, %steps% {
         clickOn(0.5, 0.99)
         LongSleep()
     }
 }
+
 goMaxLeft(steps) {
     Loop, %steps% {
         clickOn(0.01, 0.47)
         ShortSleep()
     }
 }
+
 goMaxRight(steps) {
     Loop, %steps% {
         clickOn(0.99, 0.47)
         ShortSleep()
     }
 }
+
 goRight(steps) {
     Loop, %steps% {
         clickOn(0.55, 0.47)
@@ -145,6 +296,7 @@ goLeft(steps) {
         QuickSleep()
     }
 }
+
 goTop(steps) {
     Loop, %steps% {
         clickOn(0.5, 0.40)
@@ -152,6 +304,7 @@ goTop(steps) {
     }
 
 }
+
 goBottom(steps) {
     Loop, %steps% {
         clickOn(0.5, 0.51)
@@ -209,15 +362,16 @@ collectFourthPoint() {
     goBottom(2)
     goMaxLeft(1)
 }
-goToBoss() {
+
+goToBossOld() {
     goMaxRight(1)
     goMaxTop(2)
     goMaxLeft(6)
     goMaxTop(1)
     LongSleep()
-
 }
-killBoss() {
+
+KillBoss() {
     clickOn(0.8, 0.25)
     LongSleep()
     LongSleep()
@@ -294,6 +448,11 @@ clearZone2()
 ;Update the values in these methods to adjust timing
 ;across the entire macro. Time is measured in milliseconds
 ;1000 = 1 second
+MicroSleep()
+{
+    sleep, 300
+}
+
 QuickSleep()
 {
     sleep, 1000

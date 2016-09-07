@@ -29,6 +29,8 @@ What you need:
 
 Toanngo Instruction:
 
+Credit: https://www.reddit.com/user/toanngo
+
 - install autohotkey
 - save the macro as .ahk file
 - double click and run it

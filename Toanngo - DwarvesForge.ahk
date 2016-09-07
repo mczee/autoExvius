@@ -24,7 +24,7 @@ dpadRightArrowX := 0 ; this is the x-coordination ONLY of the right arrow on the
 explorationSelectionFirstRow := [0, 0] ; the first row on the exploration, same for first row on friends
 
 topRightCorner := [0, 0] ; the top right corner of the screen
-bottomLeftCornerAndAuto := [0. 0] ; bottom left corner, make sure it clicks the auto button as well
+bottomLeftCornerAndAuto := [0, 0] ; bottom left corner, make sure it clicks the auto button as well
 
 departButton := [0, 0]
 
@@ -54,11 +54,11 @@ firstRow := explorationSelectionFirstRow[1] <> 0
 
 topRight := topRightCorner[1] <> 0 
     ? getRelativePoint(new Point(topRightCorner[1], topRightCorner[2])) 
-    : new RelativePoint(0.97, 0.05)
+    : new RelativePoint(0.95, 0.05)
 
 bottomLeft := bottomLeftCornerAndAuto[1] <> 0 
     ? getRelativePoint(new Point(bottomLeftCornerAndAuto[1], bottomLeftCornerAndAuto[2])) 
-    : new RelativePoint(0.05, 0.97)
+    : new RelativePoint(0.05, 0.95)
 
 depart := departButton[1] <> 0 
     ? getRelativePoint(new Point(departButton[1], departButton[2])) 

@@ -4,13 +4,13 @@
 #Persistent ; to make it run indefinitely
 
 SetMouseDelay, 25
-SendMode Input ; Recommended for new scripts due to its superior speed and reliability.
+;SendMode Input ; Recommended for new scripts due to its superior speed and reliability.
 SetWorkingDir %A_ScriptDir% ; Ensures a consistent starting directory.
 CoordMode, Mouse, Screen
 
 ;================;
+;== CONFIG ME ===;
 ;================;
-;=====INPUTS=====;
 x0 := 626
 y0 := 72
 x1 := 1257
@@ -19,14 +19,54 @@ y1 := 1157
 zone1Time := 600000 ; = 10min, 720000 = 12 min
 zone2Time := 600000 ; = 10min
 estimateTimeToKillBoss := 60000 ; = 1min
-delayBetweenMacros := 2400000 ; = 40 min
-;===END_INPUTS===;
+delayBetweenMacros := 2400000 ; = 40 min, this should be enough to refresh NRG
+;Activate combat moves? You need to edit the DoCombat() function!
+;If false AUTO will be clicked in combat
+activateMoves := true
+;How long is your combat animation going to be at max? Kefka LB = 15s
+animationTimeout := 15000
+;How many encounter per zone are we having this wonderful day?
+zoneOneEncounter := 15
+zoneTwoEncounter := 14 ;+1 Boss
 ;================;
+;== WELL DONE ===;
 ;================;
-
 
 width := x1 - x0
 height := y1 - y0
+
+movementSpeed := 3000
+
+combatCounter := 0
+encounterCounter := 0
+
+;Coords of the character slots and skills to swipe and click on
+cLeftTopX := 0.1
+cLeftTopY := 0.65
+cLeftMiddleX := 0.1
+cLeftMiddleY := 0.75
+cLeftBottomX := 0.1
+cLeftBottomY := 0.85
+cRightTopX := 0.60
+cRightTopY := 0.65
+cRightMiddleX := 0.60
+cRightMiddleY := 0.75
+cRightBottomX := 0.60
+cRightBottomY := 0.85
+
+;This is the color we want to detect in our CombatScene
+;Currently it's the black in the black bar with the enemy health and name in it
+colorCombatDetection := "0x18000A"
+;Wheres dat black pixel at yo
+combatBarX := 0.05
+combatBarY := 0.55
+
+;This is the color we want to detect in our CombatScene
+;Currently it's the black in the black bar with the enemy health and name in it
+colorCombatFinishDetection := "0x002B40"
+;Wheres dat black pixel at yo
+combatFinishX := 0.50
+combatFinishY := 0.50
 
 ; While CapsLock is toggled On
 ; Script will display Mouse Position (coordinates) as a tooltip at Top-Left corner of screen.
@@ -49,7 +89,9 @@ else
  px := (xx - x0) / width
  py := (yy - y0) / height
  ;tooltip %px% %py%, 0, 0
- tooltip %xx% %yy%, 0, 0
+ ;tooltip %xx% %yy%, 0, 0
+ global encounterCounter
+ tooltip, Encounter: %encounterCounter%`nCombat: %combatCounter%, 100, 100
  return
 }
 
@@ -65,10 +107,10 @@ F8::
     while (true)
     {
         LongSleep()
-        enterExploration() ;get to the exploration
-        clearZone1() ;clear zone 1
+        enterExploration()
+        ;ClearZoneOne()
 		GoToZoneTwo()
-        clearZone2()
+        ;ClearZoneTwo()
         GoToBoss()
         KillBoss()
         GoToExit()
@@ -81,95 +123,348 @@ F8::
 ; Debug
 F9::
 {
-	;KillBoss()	
+
+
+        GoToZoneTwo()
+
+
+
+}
+
+
+;^!z::  ; Control+Alt+Z hotkey.
+;MouseGetPos, MouseX, MouseY
+;PixelGetColor, color, GetWidth(0.5), GetHeight(0.5), RGB
+;MsgBox The color at the current cursor position is %color%.
+;return
+
+
+;====================================================================
+;= DOCOMBAT ROUTINE - EDIT THIS IF YOU WANT TO EXECUTE COMBAT MOVES =
+;====================================================================
+ExecuteCombatMoves() {
+	;Call the Player function for each of your characters
+	;In the brackets goes the skill, ordered like the party
+	;left top 1, left middle 2, left bottom 3, right top 4, right middle 5, right bottom 6
+	;DO NOT USE SKILL 1 (LIMIT)
+	;This does NOT have limit detection yet, don't use click on skill 1, it will break the run
+	;Does not feature enemy detection, you can't cast on a specific enemy for now
+	;Just mainly for AOE skills/heals/buffs or boss runs
+	
+	;Syntax: Player<UNIT>(<SKILL>,<TARGET>)
+	
+	;Examples
+	;PlayerOne(2) = Swipe over top left unit (1), click middle left skill (2)
+	;PlayerFive(3,5) = Swipe right middle unit (5), click bottom left skill (3), click on player 5 with skill
+	
+	;Every third encounter tell Lenna to cast Cura
+	if (Mod(encounterCounter, 3) = 0) {
+		PlayerThree(3,3)
+	}
+
+	;PlayerFour(2)
+	;PlayerFive(3)
+	;PlayerSix(5,1)
+
+	;Click on AUTO to execute the moves at once
+	goBottomLeft()
+	;Click twice to deactivate so we can do the next set of moves, deactivate to just let AUTO finish the job
+	;goBottomLeft()
+}
+
+;=== YOU MIGHT NOT WANT TO EDIT THIS, MAYBE, JUST MAYBE ===
+DoCombat() {
+	global encounterCounter, combatCounter, activateMoves
+	
+	if (DetectCombatFinished()) {
+		;Check if finish screen is up and click once to exit
+		combatCounter := 0
+		QuickSleep()
+		ClickMouse(0.5, 0.5)
+		LongSleep()
+		;Lets tell the previous function we are done here
+		return true
+	} else if (activateMoves = true AND combatCounter = 0) {
+		;Check if moves are active and we are in the first round
+		combatCounter++
+		encounterCounter++
+		ExecuteCombatMoves()
+		;Lets wait for the animations to finish
+		sleep, global animationTimeout
+		return false
+	} else if (combatCounter = 0) {
+		combatCounter++
+		encounterCounter++
+		;Click AUTO derp
+		goBottomLeft()
+		LongSleep()
+		return false
+	}
+}
+;===================
+;= GOOD JOB, BUDDY =
+;===================
+
+PlayerOne(skill,target:=0) {
+	global cLeftTopX, cLeftTopY
+	x := GetWidth(cLeftTopX)
+	y := GetHeight(cLeftTopY)
+	xmove := GetWidth(cLeftTopX+0.2)
+	MouseClickDrag, left, x, y, xmove, y
+	ShortSleep()
+	ClickSkill(skill)
+	QuickSleep()
+	if (target > 0) {
+		ClickSkill(target)
+		QuickSleep()
+	}
+}
+
+PlayerTwo(skill,target:=0) {
+	global cLeftMiddleX, cLeftMiddleY
+	x := GetWidth(cLeftMiddleX)
+	y := GetHeight(cLeftMiddleY)
+	xmove := GetWidth(cLeftMiddleX+0.2)
+	MouseClickDrag, left, x, y, xmove, y
+	ShortSleep()
+	ClickSkill(skill)
+	QuickSleep()
+	if (target > 0) {
+		ClickSkill(target)
+		QuickSleep()
+	}
+}
+
+PlayerThree(skill,target:=0) {
+	global cLeftBottomX, cLeftBottomY
+	x := GetWidth(cLeftBottomX)
+	y := GetHeight(cLeftBottomY)
+	xmove := GetWidth(cLeftBottomX+0.2)
+	MouseClickDrag, left, x, y, xmove, y
+	ShortSleep()
+	ClickSkill(skill)
+	QuickSleep()
+	if (target > 0) {
+		ClickSkill(target)
+		QuickSleep()
+	}
+}
+
+PlayerFour(skill,target:=0) {
+	global cRightTopX, cRightTopY
+	x := GetWidth(cRightTopX)
+	y := GetHeight(cRightTopY)
+	xmove := GetWidth(cRightTopX+0.2)
+	MouseClickDrag, left, x, y, xmove, y
+	ShortSleep()
+	ClickSkill(skill)
+	QuickSleep()
+	if (target > 0) {
+		ClickSkill(target)
+		QuickSleep()
+	}
+}
+
+PlayerFive(skill,target:=0) {
+	global cRightMiddleX, cRightMiddleY
+	x := GetWidth(cRightMiddleX)
+	y := GetHeight(cRightMiddleY)
+	xmove := GetWidth(cRightMiddleX+0.2)
+	MouseClickDrag, left, x, y, xmove, y
+	ShortSleep()
+	ClickSkill(skill)
+	QuickSleep()
+	if (target > 0) {
+		ClickSkill(target)
+		QuickSleep()
+	}
+}
+
+PlayerSix(skill,target:=0) {
+	global cRightBottomX, cRightBottomY
+	x := GetWidth(cRightBottomX)
+	y := GetHeight(cRightBottomY)
+	xmove := GetWidth(cRightBottomX+0.2)
+	MouseClickDrag, left, x, y, xmove, y
+	ShortSleep()
+	ClickSkill(skill)
+	QuickSleep()
+	if (target > 0) {
+		ClickSkill(target)
+		QuickSleep()
+	}
+}
+
+ClickSkill(skill) {
+	global cLeftTopX, cLeftTopY, cLeftMiddleX, cLeftMiddleY, cLeftBottomX, cLeftBottomY, cRightTopX, cRightTopY, cRightMiddleX, cRightMiddleY, cRightBottomX, cRightBottomY
+	;No switch case in AHK apparently, well lets do this the dirty way
+	if (skill = 1) {
+		MouseClick, left, GetWidth(cLeftTopX), GetHeight(cLeftTopY)
+	}
+	if (skill = 2) {
+		MouseClick, left, GetWidth(cLeftMiddleX), GetHeight(cLeftMiddleY)
+	}
+	if (skill = 3) {
+		MouseClick, left, GetWidth(cLeftBottomX), GetHeight(cLeftBottomY)
+	}
+	if (skill = 4) {
+		MouseClick, left, GetWidth(cRightTopX), GetHeight(cRightTopY)
+	}
+	if (skill = 5) {
+		MouseClick, left, GetWidth(cRightMiddleX), GetHeight(cRightMiddleY)
+	}
+	if (skill = 6) {
+		MouseClick, left, GetWidth(cRightBottomX), GetHeight(cRightBottomY)
+	}
+}
+
+;Check specified pixel if combat scene is active
+DetectCombat() {
+	global combatBarX, combatBarY, colorCombatDetection, combatCounter
+	PixelGetColor, color, GetWidth(combatBarX), GetHeight(combatBarY), RGB
+	if (color = colorCombatDetection) {
+		return true
+	} else {
+		combatCounter := 0
+		return false
+	}
+}
+
+;Check if combat finish screen is up
+DetectCombatFinished() {
+	global combatFinishX, combatFinishY, colorCombatFinishDetection
+	PixelGetColor, color, GetWidth(combatFinishX), GetHeight(combatFinishY), RGB
+	if (color = colorCombatFinishDetection) {
+		return true
+	} else {
+		return false
+	}
 }
 
 clickOn(px, py) {
-    global x0, y0, width, height
-    MouseClick, left, x0 + px*width, y0 + py*height
+    MouseClick, left, GetWidth(px), GetHeight(py)
+	MoveSleep()
+	while(DetectCombat()) {
+		if (DoCombat()) {
+			clickOn(px, py)			
+		}
+	}
+}
+
+ClickMouse(px, py) {
+    MouseClick, left, GetWidth(px), GetHeight(py)
+}
+
+GetWidth(px) {
+    global x0, width
+	return x0+px*width
+}
+
+GetHeight(py) {
+    global y0, height
+	return y0+py*height
 }
 
 MoveOneStepUp(steps:=1) {
     Loop, %steps% {
 		clickOn(0.50, 0.43)
-		MicroSleep()
+		;MicroSleep()
+		;while(DetectCombat()) {
+		;	if (DoCombat()) {
+		;		clickOn(0.50, 0.43)
+		;		MicroSleep()			
+		;	}
+		;}
     }
 }
 
 MoveOneStepDown(steps:=1) {
     Loop, %steps% {
 		clickOn(0.50, 0.51)
-		MicroSleep()
+		;MicroSleep()
+		;while(DetectCombat()) {
+		;	if (DoCombat()) {
+		;		clickOn(0.50, 0.51)
+		;		MicroSleep()			
+		;	}
+		;}
     }
 }
 
 MoveOneStepLeft(steps:=1) {
     Loop, %steps% {
 		clickOn(0.45, 0.47)
-		MicroSleep()
+		;MicroSleep()
+		;while(DetectCombat()) {
+		;	if (DoCombat()) {
+		;		clickOn(0.45, 0.47)
+		;		MicroSleep()			
+		;	}
+		;}
     }
 }
 
 MoveOneStepRight(steps:=1) {
     Loop, %steps% {
 		clickOn(0.55, 0.47)
-		MicroSleep()
+		;MicroSleep()
+		;while(DetectCombat()) {
+		;	if (DoCombat()) {
+		;		clickOn(0.55, 0.47)
+		;		MicroSleep()			
+		;	}
+		;}
     }
 }
 
 GoToZoneTwo() {
+	global encounterCounter := 0
+	
 	goTopRight()
 	clickOn(0.50, 0.35)
-    MicroSleep()
     clickOn(0.50, 0.40)
-    MicroSleep()
     clickOn(0.50, 0.45)
-    MicroSleep()
 	MoveOneStepDown(13)
 	MoveOneStepLeft(19)
 	MoveOneStepUp(14)
 	clickOn(0.50, 0.35)
-    MicroSleep()
     clickOn(0.50, 0.40)
-    MicroSleep()
     clickOn(0.50, 0.45)
-    MicroSleep()
 	MoveOneStepDown(15)
 	MoveOneStepLeft(26)
 	MoveOneStepUp(13)
 	MoveOneStepLeft(15)
 	MoveOneStepUp(1)
     clickOn(0.50, 0.45)
-    MicroSleep()
     clickOn(0.50, 0.40)
-    MicroSleep()
 	clickOn(0.50, 0.35)
-    MicroSleep()
 	clickOn(0.50, 0.30)
-    MicroSleep()
 	clickOn(0.50, 0.25)
-    MicroSleep()
 	clickOn(0.50, 0.20)
-    MicroSleep()
 	clickOn(0.50, 0.25)
-    MicroSleep()
     clickOn(0.50, 0.30)
-    MicroSleep()
     clickOn(0.50, 0.35)
-    MicroSleep()
     clickOn(0.50, 0.40)
-    MicroSleep()
     clickOn(0.50, 0.45)
-    MicroSleep()
 	MoveOneStepDown(1)
+	
+	;Loop until encounters are maxed, then exit zone
+	global encounterCounter, zoneOneEncounter
+	while (encounterCounter < zoneOneEncounter) {
+		MoveOneStepDown(1)
+		MoveOneStepUp(1)
+	}
+
+	;Exit
 	MoveOneStepLeft(3)
 }
 
 GoToBoss() {
-	goTopRight()
-    MicroSleep()
-	MoveOneStepDown(1)
-	MoveOneStepLeft(23)
+	global encounterCounter := 0
+
+	;goTopRight()
+	;MoveOneStepDown(1)
+	MoveOneStepLeft(19)
 	MoveOneStepDown(1)
 	MoveOneStepRight(15)
 	MoveOneStepDown(16)
@@ -183,6 +478,15 @@ GoToBoss() {
 	MoveOneStepRight(4)
 	MoveOneStepUp(13)
 	MoveOneStepLeft(25)
+	
+	;Loop until encounters are maxed, then exit zone
+	global encounterCounter, zoneTwoEncounter
+	while (encounterCounter < zoneOneEncounter) {
+		MoveOneStepRight(1)
+		MoveOneStepLeft(1)
+	}
+
+	;Trigger boss
 	MoveOneStepUp(5)
 }
 
@@ -191,68 +495,42 @@ GoToExit() {
 	MoveOneStepRight(9)
 	MoveOneStepUp(1)
     clickOn(0.50, 0.45)
-    MicroSleep()
     clickOn(0.50, 0.40)
-    MicroSleep()
 	clickOn(0.50, 0.35)
-    MicroSleep()
 	clickOn(0.50, 0.30)
-    MicroSleep()
 	clickOn(0.55, 0.30)
-    MicroSleep()
 	clickOn(0.55, 0.30)
-    MicroSleep()
 	clickOn(0.55, 0.30)
-    MicroSleep()
 	clickOn(0.55, 0.30)
-    MicroSleep()
 	clickOn(0.55, 0.30)
-    MicroSleep()
 	clickOn(0.55, 0.30)
-    MicroSleep()
 	clickOn(0.55, 0.30)
-    MicroSleep()
 	clickOn(0.55, 0.30)
-    MicroSleep()
 	clickOn(0.45, 0.30)
-    MicroSleep()
 	clickOn(0.45, 0.30)
-    MicroSleep()
 	clickOn(0.45, 0.30)
-    MicroSleep()
 	clickOn(0.45, 0.30)
-    MicroSleep()
 	clickOn(0.45, 0.30)
-    MicroSleep()
 	clickOn(0.45, 0.30)
-    MicroSleep()
 	clickOn(0.45, 0.30)
-    MicroSleep()
 	clickOn(0.45, 0.30)
-    MicroSleep()
 	clickOn(0.50, 0.35)
-    MicroSleep()
     clickOn(0.50, 0.40)
-    MicroSleep()
     clickOn(0.50, 0.45)
-    MicroSleep()
 	MoveOneStepDown(1)
 	MoveOneStepLeft(12)
     clickOn(0.50, 0.45)
-    MicroSleep()
     clickOn(0.50, 0.40)
-    MicroSleep()
 	clickOn(0.50, 0.35)
-    MicroSleep()
 }
 
 goTopRight() {
-    clickOn(0.95, 0.05)
+    ClickMouse(0.95, 0.05)
     QuickSleep()
 }
 
 goBottomLeft() {
-    clickOn(0.05, 0.95)
+    ClickMouse(0.05, 0.95)
     QuickSleep()
 }
 
@@ -313,12 +591,12 @@ goBottom(steps) {
 }
 
 enterExploration() {
-    clickOn(0.5, 0.33) ;click on stage
+    ClickMouse(0.5, 0.33) ;click on stage
     LongSleep()
-    clickOn(0.5, 0.33) ;click on friend
+    ClickMouse(0.5, 0.33) ;click on friend
     LongSleep()
     LongSleep()
-    clickOn(0.5, 0.85) ; click on depart
+    ClickMouse(0.5, 0.85) ; click on depart
     sleep, 10000
 }
 
@@ -329,6 +607,7 @@ collectFirstPoint() {
     goLeft(4)
     goMaxTop(3)
 }
+
 collectSecondPointAndGoToZone2() {
     goMaxBottom(1)
     goBottom(5)
@@ -372,20 +651,21 @@ goToBossOld() {
 }
 
 KillBoss() {
-    clickOn(0.8, 0.25)
+    ClickMouse(0.8, 0.25)
     LongSleep()
     LongSleep()
-    clickOn(0.8, 0.25)
+    ClickMouse(0.8, 0.25)
     LongSleep()
     LongSleep()
     goBottomLeft() ; hit the auto button
-    global estimateTimeToKillBoss
-    sleep, estimateTimeToKillBoss
-    clickOn(0.5, 0.5)
+    while (DetectCombatFinished() = false) {
+		sleep, 1000
+	}
+    ClickMouse(0.5, 0.5)
     LongSleep()
-    clickOn(0.5, 0.5)
+    ClickMouse(0.5, 0.5)
     LongSleep()
-    clickOn(0.83, 0.27)
+    ClickMouse(0.83, 0.27)
     LongSleep()
 }
 
@@ -423,26 +703,46 @@ exitExploration() {
     sleep, 15000
 }
 
-clearZone1()
+ClearZoneOne()
 {
-    global zone1Time
-    Timer("ZoneOneClearTime", zone1Time)
-    while (Timer("ZoneOneClearTime") <> true)
-    {
+    ;global zone1Time
+    ;Timer("ZoneOneClearTime", zone1Time)
+    ;while (Timer("ZoneOneClearTime") <> true)
+    
+	global encounterCounter, zoneOneEncounter
+	
+	while (encounterCounter < zoneOneEncounter) {
         goTopRight()
         goBottomLeft()
+		while(DetectCombat()) {
+			if (DoCombat()) {
+				goTopRight()
+			}
+		}
     }
+	
+	encounterCounter := 0
 }
 
-clearZone2()
+ClearZoneTwo()
 {
-    global zone2Time
-    Timer("ZoneTwoClearTime", zone2Time)
-    while (Timer("ZoneTwoClearTime") <> true)
-    {
+    ;global zone2Time
+    ;Timer("ZoneTwoClearTime", zone2Time)
+    ;while (Timer("ZoneTwoClearTime") <> true)
+
+	global encounterCounter, zoneTwoEncounter
+	
+	while (encounterCounter < zoneTwoEncounter) {
         goTopRight()
         goBottomLeft()
+		while(DetectCombat()) {
+			if (DoCombat()) {
+				goTopRight()
+			}
+		}
     }
+	
+	;encounterCounter := 0
 }
 
 ;Update the values in these methods to adjust timing
@@ -452,6 +752,12 @@ MicroSleep()
 {
     sleep, 300
 }
+
+MoveSleep()
+{
+    sleep, 3000
+}
+
 
 QuickSleep()
 {

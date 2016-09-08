@@ -38,7 +38,7 @@ height := y1 - y0
 movementSpeed := 500
 
 combatCounter := 0
-encounterCounter := 15
+encounterCounter := 0
 runsCompleted := 0
 
 ;Coords of the character slots and skills to swipe and click on
@@ -84,15 +84,14 @@ if !GetKeyState("capslock","T") ; whether capslock is on or off
 else
 { ; if on
 
- ;CoordMode, ToolTip, Screen ; makes tooltip to appear at position, relative to screen.
- ;CoordMode, Mouse, Screen ; makes mouse coordinates to be relative to screen.
- ;MouseGetPos xx, yy ; get mouse x and y position, store as %xx% and %yy%
- ;px := (xx - x0) / width
- ;py := (yy - y0) / height
+ CoordMode, ToolTip, Screen ; makes tooltip to appear at position, relative to screen.
+ CoordMode, Mouse, Screen ; makes mouse coordinates to be relative to screen.
+ MouseGetPos xx, yy ; get mouse x and y position, store as %xx% and %yy%
+ px := (xx - x0) / width
+ py := (yy - y0) / height
  ;tooltip %px% %py%, 0, 0
- ;tooltip %xx% %yy%, 0, 0
  global encounterCounter, combatCounter, runsCompleted
- tooltip, Encounter: %encounterCounter%`nCombat: %combatCounter%`nRuns: %runsCompleted%, 100, 100
+ tooltip, %xx% %yy%`n`nEncounter: %encounterCounter%`nCombat: %combatCounter%`nRuns: %runsCompleted%, 100, 100
  return
 }
 

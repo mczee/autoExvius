@@ -38,7 +38,7 @@ height := y1 - y0
 movementSpeed := 500
 
 combatCounter := 0
-encounterCounter := 0
+encounterCounter := 15
 runsCompleted := 0
 
 ;Coords of the character slots and skills to swipe and click on
@@ -484,9 +484,9 @@ GoToBoss() {
 	}
 	
 	MoveOneStepDown(1)
-	goTopRight()
-	MoveOneStepDown(1)
-	MoveOneStepLeft(21)
+	;goTopRight()
+	;MoveOneStepDown(1)
+	MoveOneStepLeft(20)
 	MoveOneStepDown(1)
 	MoveOneStepRight(15)
 	MoveOneStepDown(16)
@@ -501,13 +501,7 @@ GoToBoss() {
 	MoveOneStepUp(13)
 	MoveOneStepLeft(25)
 	
-	;Loop until encounters are maxed, then exit zone
-	global encounterCounter, zoneTwoEncounter
-	while (encounterCounter < zoneOneEncounter) {
-		MoveOneStepRight(1)
-		MoveOneStepLeft(1)
-	}
-
+	encounterCounter := 0
 	;Trigger boss
 	MoveOneStepUp(5)
 }
@@ -673,6 +667,7 @@ goToBossOld() {
 }
 
 KillBoss() {
+	LongSleep()
     ClickMouse(0.8, 0.25)
     LongSleep()
     LongSleep()

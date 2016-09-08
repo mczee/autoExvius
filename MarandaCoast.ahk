@@ -35,10 +35,11 @@ zoneTwoEncounter := 14 ;+1 Boss
 width := x1 - x0
 height := y1 - y0
 
-movementSpeed := 3000
+movementSpeed := 500
 
 combatCounter := 0
 encounterCounter := 0
+runsCompleted := 0
 
 ;Coords of the character slots and skills to swipe and click on
 cLeftTopX := 0.1
@@ -83,15 +84,15 @@ if !GetKeyState("capslock","T") ; whether capslock is on or off
 else
 { ; if on
 
- CoordMode, ToolTip, Screen ; makes tooltip to appear at position, relative to screen.
- CoordMode, Mouse, Screen ; makes mouse coordinates to be relative to screen.
- MouseGetPos xx, yy ; get mouse x and y position, store as %xx% and %yy%
- px := (xx - x0) / width
- py := (yy - y0) / height
+ ;CoordMode, ToolTip, Screen ; makes tooltip to appear at position, relative to screen.
+ ;CoordMode, Mouse, Screen ; makes mouse coordinates to be relative to screen.
+ ;MouseGetPos xx, yy ; get mouse x and y position, store as %xx% and %yy%
+ ;px := (xx - x0) / width
+ ;py := (yy - y0) / height
  ;tooltip %px% %py%, 0, 0
  ;tooltip %xx% %yy%, 0, 0
- global encounterCounter
- tooltip, Encounter: %encounterCounter%`nCombat: %combatCounter%, 100, 100
+ global encounterCounter, combatCounter, runsCompleted
+ tooltip, Encounter: %encounterCounter%`nCombat: %combatCounter%`nRuns: %runsCompleted%, 100, 100
  return
 }
 
@@ -125,7 +126,9 @@ F9::
 {
 
 
-        GoToZoneTwo()
+        ;GoToBoss()
+		KillBoss()
+		GoToExit()
 
 
 
@@ -344,11 +347,11 @@ DetectCombatFinished() {
 clickOn(px, py) {
     MouseClick, left, GetWidth(px), GetHeight(py)
 	MoveSleep()
-	while(DetectCombat()) {
-		if (DoCombat()) {
-			clickOn(px, py)			
-		}
-	}
+	;while(DetectCombat()) {
+	;	if (DoCombat()) {
+	;		clickOn(px, py)			
+	;	}
+	;}
 }
 
 ClickMouse(px, py) {
@@ -419,7 +422,21 @@ MoveOneStepRight(steps:=1) {
 
 GoToZoneTwo() {
 	global encounterCounter := 0
+
+	goBottomLeft()
 	
+	;Loop until encounters are maxed, then exit zone
+	global encounterCounter, zoneOneEncounter
+	while (encounterCounter < zoneOneEncounter) {
+		while(DetectCombat()) {
+			DoCombat()
+			LongSleep()
+		}
+		MoveOneStepRight(3)
+		MoveOneStepLeft(3)
+	}
+	
+	MoveOneStepLeft(3)
 	goTopRight()
 	clickOn(0.50, 0.35)
     clickOn(0.50, 0.40)
@@ -448,13 +465,6 @@ GoToZoneTwo() {
     clickOn(0.50, 0.45)
 	MoveOneStepDown(1)
 	
-	;Loop until encounters are maxed, then exit zone
-	global encounterCounter, zoneOneEncounter
-	while (encounterCounter < zoneOneEncounter) {
-		MoveOneStepDown(1)
-		MoveOneStepUp(1)
-	}
-
 	;Exit
 	MoveOneStepLeft(3)
 }
@@ -462,9 +472,21 @@ GoToZoneTwo() {
 GoToBoss() {
 	global encounterCounter := 0
 
-	;goTopRight()
-	;MoveOneStepDown(1)
-	MoveOneStepLeft(19)
+	;Loop until encounters are maxed, then exit zone
+	global encounterCounter, zoneTwoEncounter
+	while (encounterCounter < zoneTwoEncounter) {
+		while(DetectCombat()) {
+			DoCombat()
+			LongSleep()
+		}
+		MoveOneStepDown(1)
+		MoveOneStepUp(1)
+	}
+	
+	MoveOneStepDown(1)
+	goTopRight()
+	MoveOneStepDown(1)
+	MoveOneStepLeft(21)
 	MoveOneStepDown(1)
 	MoveOneStepRight(15)
 	MoveOneStepDown(16)
@@ -701,6 +723,9 @@ exitExploration() {
     sleep, 15000
     clickOn(0.5, 0.81) ; click next
     sleep, 15000
+	
+	global runsCompleted
+	runsCompleted++
 }
 
 ClearZoneOne()
@@ -755,7 +780,7 @@ MicroSleep()
 
 MoveSleep()
 {
-    sleep, 3000
+    sleep, 300
 }
 
 

@@ -19,10 +19,10 @@ y1 := 1157
 zone1Time := 600000 ; = 10min, 720000 = 12 min
 zone2Time := 600000 ; = 10min
 estimateTimeToKillBoss := 60000 ; = 1min
-delayBetweenMacros := 2400000 ; = 40 min, this should be enough to refresh NRG
+delayBetweenMacros := 1800000 ; = 30 min, this should be enough to refresh NRG
 ;Activate combat moves? You need to edit the DoCombat() function!
 ;If false AUTO will be clicked in combat
-activateMoves := true
+activateMoves := false
 ;How long is your combat animation going to be at max? Kefka LB = 15s
 animationTimeout := 15000
 ;How many encounter per zone are we having this wonderful day?
@@ -69,6 +69,8 @@ colorCombatFinishDetection := "0x002B40"
 combatFinishX := 0.50
 combatFinishY := 0.50
 
+controlID := 0
+
 ; While CapsLock is toggled On
 ; Script will display Mouse Position (coordinates) as a tooltip at Top-Left corner of screen.
 ; Also allows to copy them (to clipboard) with a PrintScreen button.
@@ -97,6 +99,8 @@ else
 
 return
 
+f11::Pause ; Pressing F11 once will pause the script. Pressing it again will unpause.
+
 f12::reload ;reloads script if an error occurs
 
 ;Primary macro. Press F8 to trigger it. Press F12 to stop it.
@@ -124,13 +128,31 @@ F8::
 F9::
 {
 
+	global controlID
 
-        ;GoToBoss()
-		KillBoss()
-		GoToExit()
+    MouseGetPos, , , WhichWindow, WhichControl
+    ControlGetPos, x, y, w, h, %WhichControl%, ahk_id %WhichWindow%
+	controlID := ahk_id WhichWindow
+    MsgBox, %WhichControl% - %controlID%`nX%X%`tY%Y%`nW%W%`t%H%
 
+	
+	
+	;WinGetClass, class, A
+	;MsgBox, The active window's class is "%class%" 
+	
+	;if WinExist("ahk_class Qt5QWindowIcon")
+    ;MsgBox The mouse is over Notepad.
 
+	
+}
 
+F10::
+{
+	global controlID
+	cX := GetWidth(0.5)
+	cY := GetHeight(0.7)
+	;ControlClick, x783 y1100, ahk_id %controlID%
+	ControlClick, x%cX% y%cY%, ahk_id %controlID%
 }
 
 
@@ -160,9 +182,9 @@ ExecuteCombatMoves() {
 	;PlayerFive(3,5) = Swipe right middle unit (5), click bottom left skill (3), click on player 5 with skill
 	
 	;Every third encounter tell Lenna to cast Cura
-	if (Mod(encounterCounter, 3) = 0) {
-		PlayerThree(3,3)
-	}
+	;if (Mod(encounterCounter, 3) = 0) {
+	;	PlayerThree(3,3)
+	;}
 
 	;PlayerFour(2)
 	;PlayerFive(3)
@@ -609,7 +631,6 @@ enterExploration() {
     ClickMouse(0.5, 0.33) ;click on stage
     LongSleep()
     ClickMouse(0.5, 0.33) ;click on friend
-    LongSleep()
     LongSleep()
     ClickMouse(0.5, 0.85) ; click on depart
     sleep, 10000

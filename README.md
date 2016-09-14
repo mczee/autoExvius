@@ -5,8 +5,8 @@ FFExvius AHK macro collection
 
 Files:
 
-- MarandaCoast.ahk > Testing, be careful
-- DwarvesCoast.ahk > In development don't use
+- MarandaCoast.ahk > Runs solid
+- DwarvesCoast.ahk > Runs solid
 - Toanngo* > Should work, configure and go
 
 ---

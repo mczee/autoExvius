@@ -77,7 +77,7 @@ controlID := 0
 ; Script will display Mouse Position (coordinates) as a tooltip at Top-Left corner of screen.
 ; Also allows to copy them (to clipboard) with a PrintScreen button.
 
-settimer start1, 0 ;"0" to make it update position instantly
+settimer start1, 1000
 return
 
 start1:
@@ -94,7 +94,8 @@ else
  px := (xx - x0) / width
  py := (yy - y0) / height
  ;tooltip %px% %py%, 0, 0
- global encounterCounter, combatCounter, runsCompleted, crashCounter, timeDisplay
+ global encounterCounter, combatCounter, runsCompleted, crashCounter, runTimer, timeDisplay
+ timeDisplay := runTimer.count
  tooltip, %xx% %yy%`n`nEncounter: %encounterCounter%`nCombat: %combatCounter%`nRuns: %runsCompleted%`nCrashed: %crashCounter%`nTimer: %timeDisplay%, 100, 100
  return
 }
@@ -139,8 +140,6 @@ F8::
 {
     while (true)
     {
-		runTimer := new SecondCounter
-		runTimer.Start()
 		LongSleep()
         enterExploration()
         ;ClearZoneOne()
@@ -150,9 +149,6 @@ F8::
         KillBoss()
         GoToExit()
         exitExploration()
-		global timeDisplay
-		timeDisplay := runTimer.count
-		runTimer.Stop()
         global delayBetweenMacros
         sleep, delayBetweenMacros
     }
@@ -163,12 +159,10 @@ F8::
 ; Debug
 F9::
 {
-		runTimer := new SecondCounter
-		runTimer.Start()
-		Sleep, 62000
-		global timeDisplay
-		timeDisplay := runTimer.count
-		runTimer.Stop()
+        ;GoToExit()
+        exitExploration()
+		LongSleep()
+        enterExploration()
 }
 
 
@@ -797,14 +791,29 @@ exitExploration() {
     clickOn(0.8, 0.27)
 	
 	;Wait for rewards and stuff
-    sleep, 30000
+    sleep, 15000
     clickOn(0.5, 0.5)
+    QuickSleep()
+	clickOn(0.5, 0.5)
+    QuickSleep()
+    clickOn(0.5, 0.5)
+	QuickSleep()
     clickOn(0.5, 0.81) ; click next
     LongSleep()
-    clickOn(0.5, 0.5) 
+    clickOn(0.5, 0.5)
+    QuickSleep()
+    clickOn(0.5, 0.5)
+    QuickSleep()
+    clickOn(0.5, 0.5)
+	LongSleep()
+    clickOn(0.5, 0.5)
+    QuickSleep()
+    clickOn(0.5, 0.5)
+    QuickSleep()
+    clickOn(0.5, 0.5)
     sleep, 15000
     clickOn(0.5, 0.81) ; click next
-    sleep, 15000
+    LongSleep()
 	
 	;We did it
 	global runsCompleted

@@ -154,12 +154,10 @@ F8::
         exitExploration()
 		runTimer.Stop()
         global energyRefillTime, delayBetweenMacros
-		delayBetweenMacros := energyRefillTime - runTimer.count
+		runtimeMicro := runTimer.count * 1000
+		delayBetweenMacros := energyRefillTime - runtimeMicro
         sleep, delayBetweenMacros
     }
-	
-
-	
 }
 
 ; Debug

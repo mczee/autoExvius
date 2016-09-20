@@ -22,7 +22,8 @@ Instructions:
 - Run the ahk
 - Press CAPSLOCK to open the coord box on the top left
 - Edit the file, marked with INPUTS, and change the coord (x0, y0) to your top left corner of the game screen (not including the black bar with battery and wifi), and (x1, y1) to bottom right corner of you game screen
-- Edit the timers to your parties kill speed
+- Go into combat, press F7 and edit colorCombatDetection
+- Go into combat finished screen, press F7 and edit colorCombatFinishDetection
 - Save and F12 to reload the script
 - Go to the exploration selection screen -> F8 -> Full run
 

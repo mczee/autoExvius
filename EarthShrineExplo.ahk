@@ -112,8 +112,6 @@ f12::reload ;reloads script if an error occurs
 
 F10::
 {
-
-
 	global controlID
 
     MouseGetPos, , , WhichWindow, WhichControl
@@ -169,13 +167,15 @@ F9::
 	
 }
 
-
-
-;^!z::  ; Control+Alt+Z hotkey.
-;MouseGetPos, MouseX, MouseY
-;PixelGetColor, color, GetWidth(0.5), GetHeight(0.5), RGB
-;MsgBox The color at the current cursor position is %color%.
-;return
+F7::
+{
+	global combatBarX, combatBarY, combatFinishX, combatFinishY
+	
+	PixelGetColor, colorCombat, GetWidth(combatBarX), GetHeight(combatBarY), RGB
+	PixelGetColor, colorCombatFinish, GetWidth(combatFinishX), GetHeight(combatFinishY), RGB
+	
+	MsgBox colorCombatDetection = %colorCombat%`ncolorCombatFinishDetection = %colorCombatFinish%
+}
 
 
 ;====================================================================

@@ -14,7 +14,7 @@ BATTLEAUTOSCREEN = 16 ;The battle screen where Auto is clicked
 BATTLEOVERSCREEN = 17 ;The "Results" popup over the main battle screen
 VICTORYSCREEN = 18 ;There are a few of these but you can get through all of them the same so who cares
 EXPLORATIONPROMPTSCREEN = 19 ;this is the prompt that comes up for bosses, boss results, and leaving, they all have the yes/continue in the same spot
- 
+CHARACTERINFOSCREEN = 20
 ;There's a gap here for other stuff to fill in later, but I wanted to group all the interrupt screens together
 FRIENDREQUESTSCREEN = 30
 ENERGYREFILLSCREEN = 31
@@ -27,6 +27,7 @@ EARTHSHRINEGRIND = 50
 MARANDAGRIND = 51
  
 ENERGYFACTOR = 300000
+;ENERGYFACTOR = 300
  
 myGrind = nothing
  
@@ -322,6 +323,10 @@ isVictoryScreen(windowBmp){
     global
     if(findColorInBox(windowBmp,0x001144,106,678)){
         if(findColorInBox(windowBmp,0x00104C,306,681)){
+            if(findColorInBox(windowBmp, 0x7AE2BB,329,174)){
+                ;;The character info screen has some green here, it otherwise hits the qualifiers for victory screen
+                return CHARACTERINFOSCREEN
+                }
             ;;check for two points on the blue gradient background
             return VICTORYSCREEN
         }
@@ -337,6 +342,11 @@ whereAmI()
     local result := NORESULT
     ;Take a snapshot and figure out where the hell we are
     hwnd := WinExist(WINDOWNAME)
+    if(hwnd = 0){
+        WinGetTitle, winTitle, A
+        msgbox Couldn't acquire window handle, check WINDOWNAME and restart script.  The current active window's name is %winTitle%
+        exit
+    }
     windowBmp := Gdip_BitmapFromHWND(hwnd)
     Loop %locationFuncArray0%
     { ;Loops over all the screens
@@ -407,6 +417,9 @@ grindWrapper(){
             %grindFunction%()
         }else if(location = QUESTPOPUPSCREEN){
             clickBetter(105,480)
+        }else if(location = CHARACTERINFOSCREEN){
+            ;;I don't know why but sometimes we end up here, just back out
+            clickBetter(47,165)
         }else{
             debugline = I don't know where I am oh god: %location%
             sleep 500
@@ -493,24 +506,25 @@ marandaGrinder(){
     multiMove("D",5) ;Enter Zone 1
     explorationFightGrinder(15, "oscillateSideways")
     sleep 5000
-    ;Path to start point (top right)
-    multiMove("FR",3)
-    multiMove("U",2)
-    moveRight()
+    ;Path to start point
+    multiMove("FL",3)
+    multiMove("FU",1)
     ;Z1 top right to Collection 1:
     multiMove("FL",3)
     multiMove("D",8)
     multiMove("L",13)
     multiMove("FU",3) ; Character should be offcenter toward the top of the screen here
-    clickBetter(150,340) ; One space left of where the character should be, hit the collection point
+    clickBetter(5,340) ; Full left of where the character should be, hit the collection point
+    sleep 1000
     ;Collection 1 to Collection 2:
     clickBetter(200,420) ; Moves down, view recenters
+    sleep 1000
     multiMove("D",9)
-    multiMove("L",8)
-    multiMove("D",6)
-    multiMove("L",20)
-    multiMove("U",14)
-    multiMove("L",18)
+    multiMove("FL",2)
+    multiMove("FD",1)
+    multiMove("FL",4)
+    multiMove("FU",2)
+    multiMove("FL",3)
     moveFullUp() ; Collection point 2 hit
     ;Collection 2 to Zone 2
     moveFullDown()
@@ -565,6 +579,9 @@ marandaGrinder(){
     clickBetter(320,230) ; click yes at 320,230
 }
  
+F11::
+whereAmI()
+return
 F6:: ;EARTH SHRINE INITIALIZER
 myGrind := EARTHSHRINEGRIND
 grindWrapper()

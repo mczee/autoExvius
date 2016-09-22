@@ -495,9 +495,9 @@ GoToBoss() {
 			LongSleep()
 		}
 		clickOn(0.01, 0.45)
-		MicroSleep()
+		sleep, 300
 		clickOn(0.99, 0.45)
-		MicroSleep()
+		sleep, 300
 	}
 	clickOn(0.01, 0.45)
 	QuickSleep()

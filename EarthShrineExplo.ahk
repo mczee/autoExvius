@@ -15,6 +15,7 @@ CoordMode, Mouse, Screen
 ;================================================;
 
 
+
 	;Nox settings: 1280x720 Tablet OpenGL
 	;Maximize your Nox window
 	;Activate capslock
@@ -112,6 +113,8 @@ if !GetKeyState("capslock","T") ; whether capslock is on or off
 	MouseGetPos xx, yy ; get mouse x and y position, store as %xx% and %yy%
 	px := (xx - x0) / width
 	py := (yy - y0) / height
+	xRel := GetWidthRel(xx)
+	yRel := GetHeightRel(yy)
 	global encounterCounter, combatCounter, runsCompleted, crashCounter, runTimer, timeDisplay, delayBetweenMacros
 	if (runTimer.count > 0) {
 		timeDisplay := runTimer.count
@@ -119,11 +122,11 @@ if !GetKeyState("capslock","T") ; whether capslock is on or off
 		timeDisplay := 0
 	}
 	if (delayBetweenMacros > 0) {
-		timeDelayDisplay := delayBetweenMacros/1000
+		timeDelayDisplay := Round(delayBetweenMacros/1000,0)
 	} else {
 		timeDelayDisplay := 0
 	}
-	tooltip, %xx% %yy%`n`nEncounter: %encounterCounter%`nCombat: %combatCounter%`nRuns: %runsCompleted%`nCrashed: %crashCounter%`nTimer (s): %timeDisplay%`nDelay (s): %timeDelayDisplay%, 100, 100 ;offset x, y from top left
+	tooltip, X %xx%`nY %yy%`n`nXrel %xRel%`nYrel %yRel%`n`nEncounter: %encounterCounter%`nCombat: %combatCounter%`nRuns: %runsCompleted%`nCrashed: %crashCounter%`nTimer (s): %timeDisplay%`nDelay (s): %timeDelayDisplay%, 100, 100 ;offset x, y from top left
 	return
 }
 return
@@ -158,13 +161,6 @@ F8::
         sleep, delayBetweenMacros
     }
 }
-
-;Debug
-F9::
-{
-    GoToExit()
-}
-
 ;Pixel color detection
 F7::
 {
@@ -174,9 +170,18 @@ F7::
 	PixelGetColor, colorCombatFinish, GetWidth(combatFinishX), GetHeight(combatFinishY), RGB
 	
 	MsgBox colorCombatDetection = %colorCombat%`ncolorCombatFinishDetection = %colorCombatFinish%
+	return
 }
-
-
+;Debug
+F9::
+{
+    ;OK Button connection error @ 943 683
+	x := GetWidthRel(943)
+	y := GetHeightRel(683)
+	PixelGetColor, color, GetWidth(x), GetHeight(y), RGB
+	MsgBox x = %x% y = %y%`nColor: %color%
+	return
+}
 
 
 ;====================================================================
@@ -422,6 +427,20 @@ GetWidth(px) {
 GetHeight(py) {
     global y0, height
 	return y0+py*height
+}
+
+GetWidthRel(pixel) {
+	global x0, width
+	realWidth := pixel-x0
+	relX := Round(realWidth/width, 2)
+	return relX
+}
+
+GetHeightRel(pixel) {
+	global y0, height
+	realHeight := pixel-y0
+	relY := Round(realHeight/height, 2)
+	return relY
 }
 
 MoveOneStepUp(steps:=1) {

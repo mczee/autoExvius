@@ -15,6 +15,7 @@ CoordMode, Mouse, Screen
 ;================================================;
 
 
+	;Nox settings: 1280x720 Tablet OpenGL
 	;Maximize your Nox window
 	;Activate capslock
 	;Enter pixel values as accurate as possible
@@ -36,6 +37,9 @@ CoordMode, Mouse, Screen
 	zoneOneEncounter := 14
 
 	;Click into your game screen once, press F7, suddenly a message box will appear, enter those values below
+	
+	;Go into a battle and hit F7 to get the first battle color
+	;Hit F7 at the "battle complete" screen to get the second color
 	
 	;This is the color we want to detect in our CombatScene
 	colorCombatDetection := "0x18000A"
@@ -102,21 +106,29 @@ start1:
 if !GetKeyState("capslock","T") ; whether capslock is on or off
 {
     tooltip ; if off, don't show tooltip at all.
-}
-else
-{ ; if on
- CoordMode, ToolTip, Screen ; makes tooltip to appear at position, relative to screen.
- CoordMode, Mouse, Screen ; makes mouse coordinates to be relative to screen.
- MouseGetPos xx, yy ; get mouse x and y position, store as %xx% and %yy%
- px := (xx - x0) / width
- py := (yy - y0) / height
- ;tooltip %px% %py%, 0, 0
- global encounterCounter, combatCounter, runsCompleted, crashCounter, runTimer, timeDisplay, delayBetweenMacros
- timeDisplay := runTimer.count
- tooltip, %xx% %yy%`n`nEncounter: %encounterCounter%`nCombat: %combatCounter%`nRuns: %runsCompleted%`nCrashed: %crashCounter%`nTimer: %timeDisplay%`nDelay: %delayBetweenMacros%, 100, 100
- return
+} else { ; if on
+	CoordMode, ToolTip, Screen ; makes tooltip to appear at position, relative to screen.
+	CoordMode, Mouse, Screen ; makes mouse coordinates to be relative to screen.
+	MouseGetPos xx, yy ; get mouse x and y position, store as %xx% and %yy%
+	px := (xx - x0) / width
+	py := (yy - y0) / height
+	global encounterCounter, combatCounter, runsCompleted, crashCounter, runTimer, timeDisplay, delayBetweenMacros
+	if (runTimer.count > 0) {
+		timeDisplay := runTimer.count
+	} else {
+		timeDisplay := 0
+	}
+	if (delayBetweenMacros > 0) {
+		timeDelayDisplay := delayBetweenMacros/1000
+	} else {
+		timeDelayDisplay := 0
+	}
+	tooltip, %xx% %yy%`n`nEncounter: %encounterCounter%`nCombat: %combatCounter%`nRuns: %runsCompleted%`nCrashed: %crashCounter%`nTimer (s): %timeDisplay%`nDelay (s): %timeDelayDisplay%, 100, 100 ;offset x, y from top left
+	return
 }
 return
+
+
 
 f11::Pause ; Pressing F11 once will pause the script. Pressing it again will unpause.
 

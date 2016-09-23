@@ -23,11 +23,11 @@ CoordMode, Mouse, Screen
 	
 	;Top left corner ___WITHOUT___!!!! black android bar with wifi signal in it
 	;YES, just the actual game screen where the blue starts in the top left corner
-	x0 := 626
+	x0 := 629	
 	y0 := 72
 	;Bottom right corner of said game screen
-	x1 := 1257
-	y1 := 1157
+	x1 := 1255
+	y1 := 1037
 
 
 	;We wont use lapis, this is to subtract runtime for less cooldown
@@ -55,6 +55,17 @@ CoordMode, Mouse, Screen
 	combatFinishX := 0.50
 	combatFinishY := 0.50
 
+	;Do you want to passively send MouseClicks directly into the Nox app?
+	;In other words Nox needs to be visible but you can use your Mouse otherwise (second Monitor)
+	;!!!WARNING!!!VERY IMPORTANT!!!
+	;To properly let the script detect the window you HAVE to click into the game screen once before pressing F8
+	;You also absolutely HAVE to have the mouse over the game screen while pressing F8
+	;After it started and did the first clicks correctly you can freely move the mouse elsewhere
+	;Keep in mind that for combatDetection to work the pixels have to be visible
+	;You CAN NOT minimize/move the Nox window!
+	passiveClick := false
+	
+
 
 ;================================================;
 ;================================================;
@@ -77,7 +88,7 @@ combatCounter := 0
 encounterCounter := 0
 runsCompleted := 0
 crashCounter := 0
-runTimer := 0
+runTimer := new SecondCounter
 timeDisplay := 0
 ;Activate combat moves? You need to edit the DoCombat() function!
 ;If false AUTO will be clicked in combat
@@ -115,7 +126,7 @@ if !GetKeyState("capslock","T") ; whether capslock is on or off
 	py := (yy - y0) / height
 	xRel := GetWidthRel(xx)
 	yRel := GetHeightRel(yy)
-	global encounterCounter, combatCounter, runsCompleted, crashCounter, runTimer, timeDisplay, delayBetweenMacros
+	global encounterCounter, combatCounter, runsCompleted, crashCounter, runTimer, timeDisplay, delayBetweenMacros, controlID
 	if (runTimer.count > 0) {
 		timeDisplay := runTimer.count
 	} else {
@@ -126,7 +137,7 @@ if !GetKeyState("capslock","T") ; whether capslock is on or off
 	} else {
 		timeDelayDisplay := 0
 	}
-	tooltip, X %xx%`nY %yy%`n`nXrel %xRel%`nYrel %yRel%`n`nEncounter: %encounterCounter%`nCombat: %combatCounter%`nRuns: %runsCompleted%`nCrashed: %crashCounter%`nTimer (s): %timeDisplay%`nDelay (s): %timeDelayDisplay%, 100, 100 ;offset x, y from top left
+	tooltip, X %xx%`nY %yy%`n`nXrel %xRel%`nYrel %yRel%`n`nEncounter: %encounterCounter%`nCombat: %combatCounter%`nRuns: %runsCompleted%`nCrashed: %crashCounter%`nTimer (s): %timeDisplay%`nDelay (s): %timeDelayDisplay%`nWindowID: %controlID%, 100, 100 ;offset x, y from top left
 	return
 }
 return
@@ -146,8 +157,12 @@ F8::
 {
     while (true)
     {
-		runTimer := new SecondCounter
+		global passiveClick, runTimer, energyRefillTime, delayBetweenMacros := 0
+		runTimer.count := 0
 		runTimer.Start()
+		if (passiveClick := true) {
+			DetectWindowHandle()
+		}
 		LongSleep()
         enterExploration()
         GoToBoss()
@@ -155,7 +170,6 @@ F8::
 		GoToExit()
         exitExploration()
 		runTimer.Stop()
-        global energyRefillTime, delayBetweenMacros := 0
 		runtimeMicro := runTimer.count * 1000
 		delayBetweenMacros := energyRefillTime - runtimeMicro
         sleep, delayBetweenMacros
@@ -405,8 +419,23 @@ DetectCombatFinished() {
 	}
 }
 
+;Detects Windows Handle and saves it for passive clicking
+DetectWindowHandle() {
+    MouseGetPos, , , WhichWindow, WhichControl
+    ControlGetPos, x, y, w, h, %WhichControl%, ahk_id %WhichWindow%
+	global controlID := ahk_id WhichWindow
+}
+
+;He does all the clicking so you dont have to!
 clickOn(px, py) {
-    MouseClick, left, GetWidth(px), GetHeight(py)
+	global passiveClick, controlID
+	if (passiveClick := true) {
+		Xrel := GetWidth(px)
+		Yrel := GetHeight(py)
+		ControlClick, x%Xrel% y%Yrel%, ahk_id %controlID%
+	} else {
+		MouseClick, left, GetWidth(px), GetHeight(py)
+	}
 	MoveSleep()
 	;while(DetectCombat()) {
 	;	if (DoCombat()) {
@@ -611,11 +640,11 @@ GoToExit() {
 }
 
 enterExploration() {
-    ClickMouse(0.5, 0.33) ;click on stage
+    clickOn(0.5, 0.33) ;click on stage
     LongSleep()
-    ClickMouse(0.5, 0.33) ;click on friend
+    clickOn(0.5, 0.33) ;click on friend
     LongSleep()
-    ClickMouse(0.5, 0.85) ; click on depart
+    clickOn(0.5, 0.85) ; click on depart
     sleep, 10000
 }
 

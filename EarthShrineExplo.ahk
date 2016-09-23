@@ -27,7 +27,7 @@ CoordMode, Mouse, Screen
 	y0 := 72
 	;Bottom right corner of said game screen
 	x1 := 1255
-	y1 := 1037
+	y1 := 1157
 
 
 	;We wont use lapis, this is to subtract runtime for less cooldown
@@ -43,7 +43,7 @@ CoordMode, Mouse, Screen
 	;Hit F7 at the "battle complete" screen to get the second color
 	
 	;This is the color we want to detect in our CombatScene
-	colorCombatDetection := "0x18000A"
+	colorCombatDetection := "0x17000A"
 
 	;This is the color we want to detect in our CombatFinishedScene
 	colorCombatFinishDetection := "0x002B40"
@@ -160,7 +160,7 @@ F8::
 		global passiveClick, runTimer, energyRefillTime, delayBetweenMacros := 0
 		runTimer.count := 0
 		runTimer.Start()
-		if (passiveClick := true) {
+		if (passiveClick = true) {
 			DetectWindowHandle()
 		}
 		LongSleep()
@@ -429,7 +429,7 @@ DetectWindowHandle() {
 ;He does all the clicking so you dont have to!
 clickOn(px, py) {
 	global passiveClick, controlID
-	if (passiveClick := true) {
+	if (passiveClick = true) {
 		Xrel := GetWidth(px)
 		Yrel := GetHeight(py)
 		ControlClick, x%Xrel% y%Yrel%, ahk_id %controlID%

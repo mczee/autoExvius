@@ -23,11 +23,11 @@ CoordMode, Mouse, Screen
 	
 	;Top left corner ___WITHOUT___!!!! black android bar with wifi signal in it
 	;YES, just the actual game screen where the blue starts in the top left corner
-	x0 := 629	
+	x0 := 626	
 	y0 := 72
 	;Bottom right corner of said game screen
-	x1 := 1255
-	y1 := 1157
+	x1 := 1257
+	y1 := 1158
 
 
 	;We wont use lapis, this is to subtract runtime for less cooldown
@@ -43,7 +43,7 @@ CoordMode, Mouse, Screen
 	;Hit F7 at the "battle complete" screen to get the second color
 	
 	;This is the color we want to detect in our CombatScene
-	colorCombatDetection := "0x17000A"
+	colorCombatDetection := "0x18000A"
 
 	;This is the color we want to detect in our CombatFinishedScene
 	colorCombatFinishDetection := "0x002B40"
@@ -95,6 +95,8 @@ timeDisplay := 0
 activateMoves := false
 ;If above is true: How long is your combat animation going to be at max? Kefka LB = 15s
 animationTimeout := 15000
+;Window Handle ID
+windowID := 0
 ;Coords of the character slots and skills to swipe and click on
 cLeftTopX := 0.1
 cLeftTopY := 0.65
@@ -126,7 +128,7 @@ if !GetKeyState("capslock","T") ; whether capslock is on or off
 	py := (yy - y0) / height
 	xRel := GetWidthRel(xx)
 	yRel := GetHeightRel(yy)
-	global encounterCounter, combatCounter, runsCompleted, crashCounter, runTimer, timeDisplay, delayBetweenMacros, controlID
+	global encounterCounter, combatCounter, runsCompleted, crashCounter, runTimer, timeDisplay, delayBetweenMacros, windowID
 	if (runTimer.count > 0) {
 		timeDisplay := runTimer.count
 	} else {
@@ -137,7 +139,7 @@ if !GetKeyState("capslock","T") ; whether capslock is on or off
 	} else {
 		timeDelayDisplay := 0
 	}
-	tooltip, X %xx%`nY %yy%`n`nXrel %xRel%`nYrel %yRel%`n`nEncounter: %encounterCounter%`nCombat: %combatCounter%`nRuns: %runsCompleted%`nCrashed: %crashCounter%`nTimer (s): %timeDisplay%`nDelay (s): %timeDelayDisplay%`nWindowID: %controlID%, 100, 100 ;offset x, y from top left
+	tooltip, X %xx%`nY %yy%`n`nXrel %xRel%`nYrel %yRel%`n`nEncounter: %encounterCounter%`nCombat: %combatCounter%`nRuns: %runsCompleted%`nCrashed: %crashCounter%`nTimer (s): %timeDisplay%`nDelay (s): %timeDelayDisplay%`nWindowID: %windowID%, 100, 100 ;offset x, y from top left
 	return
 }
 return
@@ -157,10 +159,10 @@ F8::
 {
     while (true)
     {
-		global passiveClick, runTimer, energyRefillTime, delayBetweenMacros := 0
+		global windowID, passiveClick, runTimer, energyRefillTime, delayBetweenMacros := 0
 		runTimer.count := 0
 		runTimer.Start()
-		if (passiveClick = true) {
+		if (passiveClick = true AND windowID = 0) {
 			DetectWindowHandle()
 		}
 		LongSleep()
@@ -423,16 +425,16 @@ DetectCombatFinished() {
 DetectWindowHandle() {
     MouseGetPos, , , WhichWindow, WhichControl
     ControlGetPos, x, y, w, h, %WhichControl%, ahk_id %WhichWindow%
-	global controlID := ahk_id WhichWindow
+	global windowID := ahk_id WhichWindow
 }
 
 ;He does all the clicking so you dont have to!
 clickOn(px, py) {
-	global passiveClick, controlID
-	if (passiveClick = true) {
+	global passiveClick, windowID
+	if (passiveClick = true AND windowID != 0) {
 		Xrel := GetWidth(px)
 		Yrel := GetHeight(py)
-		ControlClick, x%Xrel% y%Yrel%, ahk_id %controlID%
+		ControlClick, x%Xrel% y%Yrel%, ahk_id %windowID%,,,3
 	} else {
 		MouseClick, left, GetWidth(px), GetHeight(py)
 	}

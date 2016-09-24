@@ -204,33 +204,40 @@ F9::
 ;= DOCOMBAT ROUTINE - EDIT THIS IF YOU WANT TO EXECUTE COMBAT MOVES =
 ;====================================================================
 ExecuteCombatMoves() {
-	;Call the Player function for each of your characters
-	;In the brackets goes the skill, ordered like the party
-	;left top 1, left middle 2, left bottom 3, right top 4, right middle 5, right bottom 6
-	;DO NOT USE SKILL 1 (LIMIT)
-	;This does NOT have limit detection yet, don't use click on skill 1, it will break the run
-	;Does not feature enemy detection, you can't cast on a specific enemy for now
-	;Just mainly for AOE skills/heals/buffs or boss runs
-	
-	;Syntax: Player<UNIT>(<SKILL>,<TARGET>)
-	
-	;Examples
-	;PlayerOne(2) = Swipe over top left unit (1), click middle left skill (2)
-	;PlayerFive(3,5) = Swipe right middle unit (5), click bottom left skill (3), click on player 5 with skill
-	
-	;Every third encounter tell Lenna to cast Cura
-	;if (Mod(encounterCounter, 3) = 0) {
-	;	PlayerThree(3,3)
-	;}
 
-	;PlayerFour(2)
-	;PlayerFive(3)
-	;PlayerSix(5,1)
+	;Does only work with passive disabled
+	if (global passiveClick = false) {
+		
+		;Call the Player function for each of your characters
+		;In the brackets goes the skill, ordered like the party
+		;left top 1, left middle 2, left bottom 3, right top 4, right middle 5, right bottom 6
+		;DO NOT USE SKILL 1 (LIMIT)
+		;This does NOT have limit detection yet, don't use click on skill 1, it will break the run
+		;Does not feature enemy detection, you can't cast on a specific enemy for now
+		;Just mainly for AOE skills/heals/buffs or boss runs
+		
+		;Syntax: Player<UNIT>(<SKILL>,<TARGET>)
+		
+		;Examples
+		;PlayerOne(2) = Swipe over top left unit (1), click middle left skill (2)
+		;PlayerFive(3,5) = Swipe right middle unit (5), click bottom left skill (3), click on player 5 with skill
+		
+		;Every third encounter tell Lenna to cast Cura
+		;if (Mod(encounterCounter, 3) = 0) {
+		;	PlayerThree(3,3)
+		;}
 
+		;PlayerFour(2)
+		;PlayerFive(3)
+		;PlayerSix(5,1)
+	
+	}
+	
 	;Click on AUTO to execute the moves at once
 	goBottomLeft()
 	;Click twice to deactivate so we can do the next set of moves, deactivate to just let AUTO finish the job
 	;goBottomLeft()
+	
 }
 
 ;=== YOU MIGHT NOT WANT TO EDIT THIS, MAYBE, JUST MAYBE ===
@@ -241,7 +248,7 @@ DoCombat() {
 		;Check if finish screen is up and click once to exit
 		combatCounter := 0
 		QuickSleep()
-		ClickMouse(0.5, 0.5)
+		clickOn(0.5, 0.5)
 		LongSleep()
 		;Lets tell the previous function we are done here
 		return true
@@ -527,7 +534,7 @@ MoveOneStepRight(steps:=1) {
 }
 
 goBottomLeft() {
-    ClickMouse(0.05, 0.95)
+    clickOn(0.05, 0.95)
     QuickSleep()
 }
 
@@ -652,10 +659,10 @@ enterExploration() {
 
 KillBoss() {
 	LongSleep()
-    ClickMouse(0.8, 0.25)
+    clickOn(0.8, 0.25)
     LongSleep()
     LongSleep()
-    ClickMouse(0.8, 0.25)
+    clickOn(0.8, 0.25)
     LongSleep()
     LongSleep()
     goBottomLeft() ; hit the auto button
@@ -668,17 +675,17 @@ KillBoss() {
 		}
 		sleep, 1000
 	}
-    ClickMouse(0.5, 0.5)
+    clickOn(0.5, 0.5)
     LongSleep()
-    ClickMouse(0.5, 0.5)
+    clickOn(0.5, 0.5)
     LongSleep()
-    ClickMouse(0.83, 0.27)
+    clickOn(0.83, 0.27)
     LongSleep()
 }
 
 exitExploration() {
     ;Click exit
-	ClickMouse(0.83, 0.27)
+	clickOn(0.83, 0.27)
     LongSleep()
 	
 	;Wait for rewards and stuff

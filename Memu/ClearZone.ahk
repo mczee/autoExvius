@@ -15,12 +15,14 @@ CoordMode, Mouse, Screen
 ;================================================;
 
 
+	;!!!IMPORTANT FOR MEMU!!!
+	;START THIS SCRIPT AS ADMINISTRATOR
+	;!!!IMPORTANT FOR MEMU!!!
 
 	;Memu Settings: 1280x720 192 dpi
 	;Maximize your Memu window
 	;Activate capslock
 	;Enter pixel values as accurate as possible
-	
 	;Top left corner ___WITHOUT___!!!! black android bar with wifi signal in it
 	;YES, just the actual game screen where the blue starts in the top left corner
 	x0 := 624
@@ -29,24 +31,25 @@ CoordMode, Mouse, Screen
 	x1 := 1254
 	y1 := 1154
 
+	;Activate combat moves? You need to edit the ExecuteCombatMoves() function!
+	;If false AUTO will be clicked in combat
+	activateMoves := true
 	
-	;How many encounter per zone are we having this wonderful day?
-	zoneOneEncounter := 14
-	zoneTwoEncounter := 16
-
 	;Click into your game screen once, press F7, suddenly a message box will appear, enter those values below
-	
-	;Go into a battle and hit F7 to get the first battle color
-	;Hit F7 at the "battle complete" screen to get the second color
-	
+	;Go into a battle and hit F7 to get the first battle color (colorCombatDetection)
+	;Hit F7 at the "Results" screen to get the second color (colorCombatFinishDetection)
 	;This is the color we want to detect in our CombatScene
 	colorCombatDetection := "0x18000A"
-
 	;This is the color we want to detect in our CombatFinishedScene
 	colorCombatFinishDetection := "0x002B40"
 	
 	;Crash detection
+	;Start your game, maximize Memu, press the Android home button (bottom right circle icon)
+	;Press F7 and enter the value for colorCombatFinishDetection
 	colorCrashDetection := "0x12A47F"
+	;Enter the X and Y values of the tooltip in here where the Exvius app button is located
+	appX := 283
+	appY := 383
 	
 	;(you probably dont want to edit this)
 	combatBarX := 0.05
@@ -80,13 +83,6 @@ crashCounter := 0
 runTimer := new SecondCounter
 timeDisplay := 0
 scriptRunning := 0
-;Activate combat moves? You need to edit the DoCombat() function!
-;If false AUTO will be clicked in combat
-activateMoves := true
-;If above is true: How long is your combat animation going to be at max? Kefka LB = 15s
-animationTimeout := 15000
-;Window Handle ID
-windowID := 0
 ;Coords of the character slots and skills to swipe and click on
 cLeftTopX := 0.1
 cLeftTopY := 0.65
@@ -127,28 +123,32 @@ f12::reload ;reloads script if an error occurs
 ;Look at AHK help documentation to see what values to use
 F8::
 {
-    while (true)
-    {
-		global scriptRunning
-		scriptRunning := 1
-		runTimer.count := 0
-		runTimer.Start()
-		LongSleep()
-		;Loop until encounters are maxed, then exit zone
-		global encounterCounter, zoneOneEncounter
-		while (encounterCounter < zoneOneEncounter) {
-			if (DetectCombat()) {
-				while (DoCombat()) {
-					MicroSleep()
-				}
-			}
-			TriggerEncounter()
+	global scriptRunning, encounterCounter, zoneEncounter, crashCounter
+	scriptRunning := 1
+	runTimer.count := 0
+	runTimer.Start()
+	QuickSleep()
+	InputBox, zoneEncounter, How many Encounter to fight?
+	QuickSleep()
+	;Loop until encounters are maxed, then exit zone
+	while (encounterCounter < zoneEncounter) {
+		if (CheckIfCrashed()) {
+			crashCounter++
+			RestartGame()
+			LongSleep()
 		}
-		runTimer.Stop()
-		runseconds := runTimer.count
-		MsgBox Finished ClearZone of %zoneOneEncounter% encounter in %runseconds% seconds.
-    }
+		if (DetectCombat()) {
+			while (DoCombat()) {
+				MicroSleep()
+			}
+		}
+		TriggerEncounter()
+	}
+	runTimer.Stop()
+	runseconds := runTimer.count
+	MsgBox Finished %zoneOneEncounter% encounter in %runseconds% seconds.
 }
+
 ;Pixel color detection
 F7::
 {
@@ -160,6 +160,7 @@ F7::
 	MsgBox colorCombatDetection = %colorCombat%`ncolorCombatFinishDetection = %colorCombatFinish%
 	return
 }
+
 ;Debug
 F9::
 {
@@ -176,7 +177,6 @@ F9::
 ;= DOCOMBAT ROUTINE - EDIT THIS IF YOU WANT TO EXECUTE COMBAT MOVES =
 ;====================================================================
 ExecuteCombatMoves() {
-
 	;Call the Player function for each of your characters
 	;In the brackets goes the skill, ordered like the party
 	;left top 1, left middle 2, left bottom 3, right top 4, right middle 5, right bottom 6
@@ -185,31 +185,32 @@ ExecuteCombatMoves() {
 	;Does not feature enemy detection, you can't cast on a specific enemy for now
 	;Just mainly for AOE skills/heals/buffs or boss runs
 	
-	;Syntax: Player<UNIT>(<SKILL>,<TARGET>)
+	;Syntax:
+	;	Player<#>Activate() = Swipes over that player to enter skill menu
+	;	Player<#>Click(<SKILL#>,<TARGET#>) = Click on that skill, chose a target to click for heals or buffs
+	;	PlayerScrollDown = Scroll down 1 compelte set of skills
 	
 	;Examples
 	;PlayerOne(2) = Swipe over top left unit (1), click middle left skill (2)
 	;PlayerFive(3,5) = Swipe right middle unit (5), click bottom left skill (3), click on player 5 with skill
 	
-	;Every third encounter tell Lenna to cast Cura
+	;Every second encounter tell your friend to scroll down 1 complete set and click a skill
 	global encounterCounter, combatCounter
 	if ((encounterCounter > 0) AND (Mod(encounterCounter, 2) = 0) AND (combatCounter = 1)) {
+		;Swipe right over player six
 		PlayerSixActivate()
 		QuickSleep()
+		;Scroll down 1 complete set of skills
 		PlayerScrollDown()
 		MicroSleep()
+		;Click skill
 		PlayerSixClick(3)
 	}
-
-	;PlayerFour(2)
-	;PlayerFive(3)
-	;PlayerSix(5,1)
 
 	;Click on AUTO to execute the moves at once
 	clickAuto()
 	;Click twice to deactivate so we can do the next set of moves, deactivate to just let AUTO finish the job
 	;clickAuto()
-	
 }
 
 ;=== YOU MIGHT NOT WANT TO EDIT THIS, MAYBE, JUST MAYBE ===
@@ -369,7 +370,7 @@ UpdateTooltip() {
 	py := (yy - y0) / height
 	xRel := GetWidthRel(xx)
 	yRel := GetHeightRel(yy)
-	global scriptRunning, encounterCounter, combatCounter, crashCounter, runTimer
+	global scriptRunning, encounterCounter, crashCounter, runTimer
 	if (runTimer.count > 0) {
 		timeDisplay := runTimer.count
 	} else {
@@ -380,7 +381,7 @@ UpdateTooltip() {
 	} else {
 		timeDelayDisplay := 0
 	}
-	tooltip, X %xx%`nY %yy%`n`nXrel %xRel%`nYrel %yRel%`n`nEnabled: %scriptRunning%`nEncounter: %encounterCounter%`nCombat: %combatCounter%`nCrashed: %crashCounter%`nTimer (s): %timeDisplay%, 100, 100 ;offset x, y from top left
+	tooltip, X %xx%`nY %yy%`n`nXrel %xRel%`nYrel %yRel%`n`nRunning: %scriptRunning%`nEncounter: %encounterCounter%`nCrashed: %crashCounter%`nTimer (s): %timeDisplay%, 100, 100 ;offset x, y from top left
 }
 
 ;Pixel color detection
@@ -416,7 +417,8 @@ CheckIfCrashed() {
 
 ;Restart game
 RestartGame() {
-	clickOn(0.85, 0.25)
+	global appX, appY
+	MouseClick, left, appX, appY
 	Sleep, 30000
 	clickOn(0.5, 0.5)
 	Sleep, 30000

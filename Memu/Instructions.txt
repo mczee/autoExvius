@@ -1,0 +1,17 @@
+Instructions:
+
+- Memu, 1280x720 DPI 192, maxed Window
+- Game in DPAD, small, right
+- (Set auto LB to on in options)
+- AutoHotkey
+- Get the AHK you want to run
+- !IMPORTANT! Run the AHK in Administrator mode !IMPORTANT!
+- Press CAPSLOCK to open the coord box on the top left
+- Edit the file section "CONFIG ME" and the function ExecuteCombatMoves() if you set activateMoves to true
+- Save and F12 to reload the script
+- F8 starts the script until otherwise stated
+- F11 pauses it,  F11 again unpauses it, press F12 anytime to stop it
+- CAPSLOCK for run information
+- Have fun!
+
+EOF

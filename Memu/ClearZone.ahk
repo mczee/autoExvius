@@ -43,7 +43,7 @@ CoordMode, Mouse, Screen
 	;This is the color we want to detect in our CombatFinishedScene
 	colorCombatFinishDetection := "0x002B40"
 	
-	;Crash detection
+	;Crash detection - untested
 	;Start your game, maximize Memu, press the Android home button (bottom right circle icon)
 	;Press F7 and enter the value for colorCombatFinishDetection
 	colorCrashDetection := "0x12A47F"

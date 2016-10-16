@@ -32,10 +32,11 @@ CoordMode, Mouse, Screen
 
 	;We wont use lapis, this is to subtract runtime for less cooldown
 	;t(NRG)*60000, 15NRG=900000
-	energyRefillTime := 900000
+	energyRefillTime := 3900000
 	
 	;How many encounter per zone are we having this wonderful day?
 	zoneOneEncounter := 14
+	zoneTwoEncounter := 14
 
 	;Click into your game screen once, press F7, suddenly a message box will appear, enter those values below
 	
@@ -167,6 +168,7 @@ F8::
 		}
 		LongSleep()
         enterExploration()
+		GoToZoneTwo()
         GoToBoss()
         KillBoss()
 		GoToExit()
@@ -538,12 +540,19 @@ goBottomLeft() {
     QuickSleep()
 }
 
-GoToBoss() {
+GoToZoneTwo() {
 	global encounterCounter := 0
 
-	clickOn(0.1, 0.3)
-	MicroSleep()
-		
+	;Clear first area collect node and go to first zone encounter area
+	MoveOneStepUp(8)
+	MoveOneStepRight(12)
+	clickOn(0.5, 0.9)
+	QuickSleep()
+	clickOn(0.5, 0.05)
+	QuickSleep()
+	MoveOneStepLeft(12)
+	MoveOneStepUp(15)
+
 	;Loop until encounters are maxed, then exit zone
 	global encounterCounter, zoneOneEncounter
 	while (encounterCounter < zoneOneEncounter) {
@@ -551,100 +560,134 @@ GoToBoss() {
 			DoCombat()
 			LongSleep()
 		}
-		clickOn(0.01, 0.45)
-		sleep, 300
-		clickOn(0.99, 0.45)
-		sleep, 300
+		MoveOneStepRight(4)
+		MoveOneStepLeft(4)
 	}
-	clickOn(0.01, 0.45)
+	MoveOneStepLeft(4)
+	
+	;Node 2
+	MoveOneStepUp(27)
+	MoveOneStepDown(13)
+	MoveOneStepRight(19)
+	
+	;Way to node 3
+	clickOn(0.95, 0.45)
+	LongSleep()
+	MoveOneStepRight(16)
+
+	;Stairs
+	clickOn(0.60, 0.40)
+	clickOn(0.60, 0.40)
+	clickOn(0.60, 0.40)
+	clickOn(0.60, 0.40)
+	clickOn(0.60, 0.40)
+	clickOn(0.60, 0.40)
+	clickOn(0.60, 0.40)
+	clickOn(0.60, 0.40)
+	clickOn(0.60, 0.40)
+	clickOn(0.60, 0.40)
+	clickOn(0.60, 0.40)
+	clickOn(0.60, 0.40)
+	
+	;Slalom	
+	clickOn(0.70, 0.45)
+	clickOn(0.70, 0.40)
+	clickOn(0.70, 0.40)
+	clickOn(0.70, 0.40)
+	clickOn(0.70, 0.40)
+	clickOn(0.70, 0.40)
+	clickOn(0.70, 0.40)
+	clickOn(0.70, 0.40)
+	clickOn(0.70, 0.10)
+	LongSleep()
+}
+
+GoToBoss() {
+	global encounterCounter := 0
+
+	;Loop until encounters are maxed, then exit zone
+	global encounterCounter, zoneTwoEncounter
+	while (encounterCounter < zoneTwoEncounter) {
+		while(DetectCombat()) {
+			DoCombat()
+			LongSleep()
+		}
+		clickOn(0.3, 0.45)
+		QuickSleep()
+		clickOn(0.9, 0.45)
+		QuickSleep()
+
+	}
+	clickOn(0.9, 0.45)
 	QuickSleep()
 
-	clickOn(0.7, 0.15)
+	;Zone2
+	clickOn(0.7, 0.45)
+	clickOn(0.7, 0.40)
+	clickOn(0.7, 0.40)
+	clickOn(0.7, 0.40)
+	clickOn(0.7, 0.40)
+	clickOn(0.7, 0.40)
+	clickOn(0.7, 0.40)
+	clickOn(0.7, 0.40)
+	clickOn(0.7, 0.40)
+	clickOn(0.7, 0.40)
+	clickOn(0.7, 0.40)
+	clickOn(0.7, 0.40)
+	clickOn(0.7, 0.40)
+	clickOn(0.7, 0.40)
+	clickOn(0.7, 0.40)
+	clickOn(0.7, 0.40)
+	clickOn(0.7, 0.40)
+	clickOn(0.6, 0.30)
 	QuickSleep()
-	clickOn(0.01, 0.4)
+	clickOn(0.6, 0.30)
 	QuickSleep()
-	clickOn(0.01, 0.45)
+	clickOn(0.6, 0.10)
+	LongSleep()
+
+	;Node 3 room
+	MoveOneStepUp(9)
+	MoveOneStepRight(7)
+	MoveOneStepLeft(7)
+	MoveOneStepDown(11)
+
+	;Way to Boss
+	clickOn(0.6, 0.8)
 	QuickSleep()
-	clickOn(0.01, 0.45)
+	clickOn(0.1, 0.4)
 	QuickSleep()
-	clickOn(0.5, 0.01)
-	QuickSleep()
-	clickOn(0.5, 0.01)
-	QuickSleep()
-	clickOn(0.99, 0.45)
-	QuickSleep()
-	clickOn(0.99, 0.45)
-	QuickSleep()
-	clickOn(0.99, 0.40)
-	QuickSleep()
-	clickOn(0.99, 0.45)
-	QuickSleep()
-	clickOn(0.99, 0.45)
-	QuickSleep()
-	clickOn(0.99, 0.45)
-	QuickSleep()
-	clickOn(0.5, 0.99)
-	QuickSleep()
-	clickOn(0.5, 0.99)
-	QuickSleep()
-	clickOn(0.55, 0.5)
-	QuickSleep()
-	clickOn(0.75, 0.45)
-	QuickSleep()
-	MoveOneStepDown(1)
-	MoveOneStepUp(1)
-	MoveOneStepLeft(3)
-	clickOn(0.5, 0.01)
-	QuickSleep()
-	clickOn(0.5, 0.01)
-	QuickSleep()
-	clickOn(0.5, 0.01)
-	QuickSleep()
-	clickOn(0.5, 0.01)
-	QuickSleep()
-	clickOn(0.5, 0.01)
-	QuickSleep()
-	clickOn(0.5, 0.01)
-	QuickSleep()
-	clickOn(0.5, 0.01)
-	QuickSleep()
-	clickOn(0.5, 0.01)
-	QuickSleep()
-	MoveOneStepRight(3)
-	MoveOneStepUp(4)
-	MoveOneStepLeft(2)
-	MoveOneStepUp(2)
-	MoveOneStepLeft(1)
-	clickOn(0.5, 0.01)
-	QuickSleep()
-	clickOn(0.5, 0.01)
-	QuickSleep()
-	clickOn(0.5, 0.99)
-	QuickSleep()
-	clickOn(0.5, 0.99)
-	QuickSleep()
-	MoveOneStepRight(3)
-	MoveOneStepDown(5)
-	clickOn(0.01, 0.45)
-	QuickSleep()
-	clickOn(0.01, 0.45)
-	QuickSleep()
-	clickOn(0.01, 0.45)
-	QuickSleep()
-	clickOn(0.01, 0.45)
-	QuickSleep()
-	clickOn(0.5, 0.01)
-	QuickSleep()
-	clickOn(0.5, 0.01)
+	MoveOneStepLeft(18)
+	MoveOneStepUp(5)
+
+	;Enter Boss room and trigger
+	clickOn(0.5, 0.1)
+	LongSleep()
+	clickOn(0.5, 0.1)
 	LongSleep()
 }
 
 GoToExit() {
-	MoveOneStepLeft(2)
-	MoveOneStepDown(2)
+	;Enter Node 4 room
+	MoveOneStepLeft(11)
+	clickOn(0.1, 0.4)
+	LongSleep()
+	
+	;Collect Node 4 and exit room
+	MoveOneStepLeft(5)
+	MoveOneStepUp(9)
+	MoveOneStepRight(6)
 	MoveOneStepUp(2)
-	MoveOneStepRight(3)
-	clickOn(0.5, 0.01)
+	MoveOneStepDown(2)
+	MoveOneStepLeft(6)
+	MoveOneStepDown(9)
+	MoveOneStepRight(7)
+	LongSleep()
+	
+	;Exit dungeon
+	MoveOneStepRight(11)
+	MoveOneStepUp(3)
+	clickOn(0.5, 0.1)
 	LongSleep()	
 }
 

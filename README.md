@@ -1,5 +1,5 @@
 # autoExvius
-Final Fantasy Exvius macro collection
+Final Fantasy Brave Exvius macro collection
 
 - Nox is buggy but the scripts should still run fine if it works again
 

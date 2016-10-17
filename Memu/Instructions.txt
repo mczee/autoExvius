@@ -14,4 +14,19 @@ Instructions:
 - CAPSLOCK for run information
 - Have fun!
 
+---
+
+MIR Files (WashinTong)
+
+- Create a dummy Memu script by recroding, click mouse once into game area and stop recording
+- Close Memu
+- File should be in ProgramFiles\Microvirt\Memu\scripts
+- Check info.ini which file to edit, or just check timestamp on files, should be the latest one created
+- Switch content of file for desired script, might need Admin rights
+- Start Memu
+- Set script settings: Run period, Interval 0, Acceleration 8x
+- Make sure to have TM party selected as default
+- Go to Earth Shrine menu
+- Run script
+
 EOF

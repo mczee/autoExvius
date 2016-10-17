@@ -146,7 +146,7 @@ F8::
 	}
 	runTimer.Stop()
 	runseconds := runTimer.count
-	MsgBox Finished %zoneOneEncounter% encounter in %runseconds% seconds.
+	MsgBox Finished %zoneEncounter% encounter in %runseconds% seconds.
 }
 
 ;Pixel color detection
@@ -199,12 +199,12 @@ ExecuteCombatMoves() {
 	if ((encounterCounter > 0) AND (Mod(encounterCounter, 2) = 0) AND (combatCounter = 1)) {
 		;Swipe right over player six
 		PlayerSixActivate()
-		QuickSleep()
 		;Scroll down 1 complete set of skills
 		PlayerScrollDown()
-		MicroSleep()
+		;Scroll down 1 complete set of skills
+		PlayerScrollDown()
 		;Click skill
-		PlayerSixClick(3)
+		PlayerSixClick(4)
 	}
 
 	;Click on AUTO to execute the moves at once
@@ -322,6 +322,7 @@ PlayerSixActivate() {
 	y := GetHeight(cRightBottomY)
 	xmove := GetWidth(cRightBottomX+0.2)
 	MouseClickDrag, left, x, y, xmove, y
+	QuickSleep()
 }
 
 PlayerSixClick(skill,target:=0) {
@@ -335,7 +336,7 @@ PlayerSixClick(skill,target:=0) {
 
 PlayerScrollDown() {
 	MouseClickDrag, left, GetWidth(0.49), GetHeight(0.9), GetWidth(0.49), GetHeight(0.61)
-	ShortSleep()
+	MicroSleep()
 }
 
 ClickSkill(skill) {
@@ -501,7 +502,6 @@ MoveSleep()
     sleep, 300
 }
 
-
 QuickSleep()
 {
     sleep, 1000
@@ -514,7 +514,7 @@ ShortSleep()
 
 LongSleep()
 {
-    sleep, 4000
+    sleep, 3000
 }
 
 ; An example class for counting the seconds...

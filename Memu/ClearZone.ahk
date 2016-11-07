@@ -116,6 +116,27 @@ f11::Pause ; Pressing F11 once will pause the script. Pressing it again will unp
 
 f12::reload ;reloads script if an error occurs
 
+;Pixel color detection
+F7::
+{
+	global combatBarX, combatBarY, combatFinishX, combatFinishY
+	
+	PixelGetColor, colorCombat, GetWidth(combatBarX), GetHeight(combatBarY), RGB
+	PixelGetColor, colorCombatFinish, GetWidth(combatFinishX), GetHeight(combatFinishY), RGB
+	
+	MsgBox colorCombatDetection = %colorCombat%`ncolorCombatFinishDetection = %colorCombatFinish%
+	return
+}
+
+;Debug
+F9::
+{
+	PlayerSixActivate()
+	QuickSleep()
+	PlayerScrollDown()
+	MicroSleep()
+	PlayerSixClick(3)
+}
 
 
 ;Primary macro. Press F8 to trigger it. Press F12 to stop it.
@@ -147,28 +168,7 @@ F8::
 	runTimer.Stop()
 	runseconds := runTimer.count
 	MsgBox Finished %zoneEncounter% encounter in %runseconds% seconds.
-}
-
-;Pixel color detection
-F7::
-{
-	global combatBarX, combatBarY, combatFinishX, combatFinishY
-	
-	PixelGetColor, colorCombat, GetWidth(combatBarX), GetHeight(combatBarY), RGB
-	PixelGetColor, colorCombatFinish, GetWidth(combatFinishX), GetHeight(combatFinishY), RGB
-	
-	MsgBox colorCombatDetection = %colorCombat%`ncolorCombatFinishDetection = %colorCombatFinish%
 	return
-}
-
-;Debug
-F9::
-{
-	PlayerSixActivate()
-	QuickSleep()
-	PlayerScrollDown()
-	MicroSleep()
-	PlayerSixClick(3)
 }
 
 
@@ -204,7 +204,7 @@ ExecuteCombatMoves() {
 		;Scroll down 1 complete set of skills
 		PlayerScrollDown()
 		;Click skill
-		PlayerSixClick(4)
+		PlayerSixClick(5)
 	}
 
 	;Click on AUTO to execute the moves at once
@@ -399,10 +399,10 @@ PixelColorDetection()
 
 ;Just move to trigger an encounter
 TriggerEncounter() {
-	clickOn(0.05, 0.47)
-	MicroSleep()
-	clickOn(0.95, 0.47)
-	MicroSleep()
+	clickOn(0.01, 0.47)
+	MoveSleep()
+	clickOn(0.99, 0.47)
+	MoveSleep()
 }
 
 ;Check if crashed

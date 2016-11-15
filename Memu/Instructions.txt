@@ -16,7 +16,32 @@ Instructions:
 
 ---
 
-MIR Files (WashinTong)
+MIR Files (MEMU Script files)
+
+PWNOLOGY:
+
+    Install Memu (http://www.memuplay.com/). Download FFBE. Self Explanatory.
+
+    In your MEmu Settings (Right hand bar, third button up. Looks like a gear.) Resolution should be set to 1280 * 720 (192 dpi) -- https://ibin.co/2xa2unWDUv9F.jpg for reference. That was the default for me, but I've heard it isn't for others. Also, don't forget to turn on Auto Limit Break on your new game settings!
+
+    Create a new blank macro. Do this by opening the "Operations Record" (looks like a little mouse icon, fifth button up on the right hand toolbar of MEmu.) From there, click the record button, make a single click, and stop recording.
+
+    Rename said script to your liking in MEmu (for example, "Earth Shrine TM".)
+
+    Find your Script directory. For me, that's "C:\Program Files\Microvirt\MEmu\scripts"
+
+    Paste in values from my scripts (located on the Pastebin link) into your newly created script. What you're going to do is open the .mir file in Notepad. You can typically right click and "Edit" or Open with --> Notepad. Make sure you replace all the old data that's in there! Save and close the file.
+
+    Note: If you run into issues where it doesn't let you save, you might have to add full privileges to the folder. Go back up one level and right click on the "scripts" folder. Proceed in this order --> Properties --> Security --> Edit --> Click on Users -- Check the "Full Control" Box -- Apply -- Ok -- Close Windows.
+
+    Navigate to the Mission Select screen for the Macro/Script you've just pasted in data for. Click Play on the Macro/Script inside the "Operations Record" menu.
+
+    Win
+
+
+---
+
+WASHINTONG:
 
 - Create a dummy Memu script by recroding, click mouse once into game area and stop recording
 - Close Memu

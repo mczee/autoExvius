@@ -204,7 +204,7 @@ ExecuteCombatMoves() {
 		;Scroll down 1 complete set of skills
 		PlayerScrollDown()
 		;Click skill
-		PlayerSixClick(5)
+		PlayerSixClick(1)
 	}
 
 	;Click on AUTO to execute the moves at once
